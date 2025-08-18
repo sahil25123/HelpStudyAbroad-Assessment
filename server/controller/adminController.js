@@ -36,11 +36,13 @@ export const adminLogin = async(req , res) =>{
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
     const token = jwt.sign({
-        id:admin._id},
+        id: admin._id
+    },
         process.env.JWT_SECRET,
-    {expiresIn :"1h"} )
+        { expiresIn: "1h" }
+    );
 
-    res.status(200).json({message:"Logged In Succefully"})
+    res.status(200).json({ message: "Logged In Successfully", token });
     }
     catch(e){
         res.status(500).json({error :e.message})
@@ -48,15 +50,17 @@ export const adminLogin = async(req , res) =>{
 }
 
  export const adminPrtected = (req, res) => {
-  const token = req.headers["authorization"];
-  if (!token) return res.status(401).json({ error: "No token provided" });
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "No token provided" });
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.json({ message: "Welcome Admin!", decoded });
-  } catch (err) {
-    res.status(401).json({ error: "Invalid token" });
-  }
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        res.json({ message: "Welcome Admin!", decoded });
+    } 
+    catch (err) {
+        res.status(401).json({ error: "Invalid token" });
+    }
 };
 
 
