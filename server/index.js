@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connect from "./config/db.js";
 
 import adminRoutes from "./routes/admin.js"
+import recommedationRoutes from "./routes/recommendation.js"
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.json())
 
 
 app.use("/api/admin" ,adminRoutes);
+app.use("/api" , recommedationRoutes)
 
 app.get("/" ,(req, res) =>{
     res.send("Hello  this is inside help study borad backend")
