@@ -7,7 +7,7 @@ It demonstrates backend and frontend integration using the MERN stack, with feat
 ---
 
 ## 🛠️ Tech Stack
-- **Frontend:** React + TypeScript + Tailwind + Shadcn/UI  
+- **Frontend:** React(Next) + TypeScript + Tailwind + Shadcn/UI  
 - **Backend:** Node.js, Express.js, MongoDB, Mongoose  
 - **Authentication:** JWT, bcrypt  
 - **File Upload & Parsing:** Multer, csv-parser  
