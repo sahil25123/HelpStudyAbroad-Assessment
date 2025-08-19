@@ -1,32 +1,52 @@
-// Simulated Gemini AI API integration for course recommendations
+import { GoogleGenerativeAI  } from "@google/generative-ai";
+
 export const recommendation = async (req, res) => {
-	// Extract user preferences from request body
-	const { topics, skillLevel } = req.body;
+    const { topics, skillLevel } = req.body;
 
-	// Placeholder for Gemini AI API key
-	const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-	// Simulate Gemini AI API call (replace this with actual API call in production)
-	// Example: const response = await fetch('https://gemini.googleapis.com/v1/recommend', { ... })
+    if (!GEMINI_API_KEY) {
+        return res.status(500).json({ error: "Gemini API key not set" });
+    }
 
-	// Mock recommendations based on user preferences
-	const mockRecommendations = [
+    try {
+        const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+
+        const prompt = `Suggest 2 courses for the following preferences:
+        Topics: ${topics}
+        Skill Level: ${skillLevel}
+        Please format the response as a JSON object with a single key 'courses' containing an array of two objects. Each object should have keys 'name' (string) and 'description' (string).`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        let recommendations;
+        try 
 		{
-			course: "Introduction to AI",
-			topic: topics && topics.length ? topics[0] : "AI Basics",
-			level: skillLevel || "Beginner",
-			provider: "Gemini AI"
-		},
-		{
-			course: "Advanced Machine Learning",
-			topic: topics && topics[1] ? topics[1] : "Machine Learning",
-			level: skillLevel || "Intermediate",
-			provider: "Gemini AI"
-		}
-	];
+            recommendations = JSON.parse(text);
+        } 
+		catch (parseError) {
+            console.error("Failed to parse Gemini API response:", text);
+            return res.status(500).json({ error: "Failed to parse API response. Please try again." });
+        }
 
-	res.json({
-		message: "Mock recommendations generated. Replace this with Gemini AI API call in production.",
-		recommendations: mockRecommendations
-	});
+        res.json({ recommendations: recommendations.courses });
+    } catch (e) {
+        console.error("Error fetching recommendations from Gemini API:", e);
+        res.status(500).json({ error: e.message || "Failed to get recommendations" });
+    }
 };
+
+
+// // Mock Gemini API response
+//   const recommendations = [
+//     { title: "Intro to MERN", level: "Beginner", topic: "Full Stack" },
+//     { title: "Advanced React Patterns", level: "Intermediate", topic: "Frontend" },
+//     { title: "Node.js Microservices", level: "Advanced", topic: "Backend" }
+//   ];
+
+//   res.json({ recommendations });
+
