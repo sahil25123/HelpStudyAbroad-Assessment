@@ -1,6 +1,7 @@
 'use client';
-
-import { useState } from 'react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -32,15 +33,13 @@ function UploadCard({ title, description, onUpload, onDownloadTemplate }: { titl
   const handleUpload = () => {
     if (selectedFile) {
       setIsUploading(true);
-      // Simulate upload process
-      setTimeout(() => {
-        onUpload(selectedFile);
+      Promise.resolve(onUpload(selectedFile)).finally(() => {
         setIsUploading(false);
         setSelectedFile(null);
         // Reset file input
         const fileInput = document.getElementById(`file-upload-${title}`) as HTMLInputElement;
         if(fileInput) fileInput.value = '';
-      }, 1500);
+      });
     }
   };
 
@@ -89,23 +88,71 @@ function UploadCard({ title, description, onUpload, onDownloadTemplate }: { titl
 
 export default function AdminDashboardPage() {
   const { toast } = useToast();
+  const router = useRouter();
+  const [courses, setCourses] = useState<any[]>([]);
 
-  const handleUniversityUpload = (file: File) => {
-    toast({
-      title: <div className="flex items-center gap-2"><CheckCircle className="text-green-500" /> Success</div>,
-      description: `University data from "${file.name}" uploaded successfully.`,
-    });
-    // In a real app, you would process the file here
+  // Authentication check
+  useEffect(() => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (!token) {
+      router.push('/admin/login');
+    }
+  }, [router]);
+
+  // Fetch courses
+  const fetchCourses = async () => {
+    try {
+      const res = await axios.get('http://localhost:9000/api/courses');
+      setCourses(res.data);
+    } catch (err) {
+      // handle error
+    }
   };
 
-  const handleCourseUpload = (file: File) => {
-    toast({
-      title: <div className="flex items-center gap-2"><CheckCircle className="text-green-500" /> Success</div>,
-      description: `Course data from "${file.name}" uploaded successfully.`,
-    });
-     // In a real app, you would process the file here
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const handleUniversityUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      await axios.post('http://localhost:9000/api/universities/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      toast({
+        title: 'Success',
+        description: `University data from "${file.name}" uploaded successfully.`,
+      });
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Upload Failed',
+        description: 'Failed to upload university data.'
+      });
+    }
   };
 
+  const handleCourseUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      await axios.post('http://localhost:9000/api/courses/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      toast({
+        title: 'Success',
+        description: `Course data from "${file.name}" uploaded successfully.`,
+      });
+      fetchCourses();
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Upload Failed',
+        description: 'Failed to upload course data.'
+      });
+    }
+  };
   const handleUniversityTemplateDownload = () => {
     const headers = [
       "University Name", "Unique Code", "Image URL", "Location (City, Country)",
@@ -186,6 +233,15 @@ export default function AdminDashboardPage() {
           onDownloadTemplate={handleCourseTemplateDownload}
         />
       </div>
+      {/* Course List */}
+      <section className="mt-12">
+        <h2 className="font-bold text-2xl mb-2">All Courses</h2>
+        <ul>
+          {courses.map((course: any) => (
+            <li key={course._id}>{course.title}</li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }

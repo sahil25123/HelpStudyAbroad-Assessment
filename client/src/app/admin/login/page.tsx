@@ -21,6 +21,7 @@ export default function AdminLoginPage() {
   setIsLoading(true);
 
   try {
+    console.log("logging in ...")
     const res = await axios.post("http://localhost:9000/api/admin/login", {
       email,
       password,
@@ -86,9 +87,9 @@ export default function AdminLoginPage() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full" disabled={isLoading} >
               {isLoading ? 'Signing In...' : 'Sign In'}
-              {!isLoading && <LogIn className="ml-2 h-4 w-4" />}
+              {!isLoading && <LogIn className="ml-2 h-4 w-4" />} 
             </Button>
           </CardFooter>
         </form>
