@@ -5,6 +5,7 @@ import connect from "./config/db.js";
 import adminRoutes from "./routes/admin.js"
 import recommedationRoutes from "./routes/recommendation.js"
 import courseRoute from "./routes/course.js"
+import searchRoute from "./routes/search.js"
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use(express.json())
 app.use("/api/admin" ,adminRoutes);
 app.use("/api" , recommedationRoutes)
 app.use("/api/courses",courseRoute)
+app.use("/api" , searchRoute)
 
 
 app.get("/" ,(req, res) =>{
