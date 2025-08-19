@@ -9,4 +9,4 @@ const courseSchema = new mongoose.Schema({
   duration: String
 });
 
-export default mongoose.model("Course", courseSchema);
+export const Course =  mongoose.model("Course", courseSchema);
