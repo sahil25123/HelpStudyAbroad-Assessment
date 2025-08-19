@@ -1,18 +1,20 @@
 import express from "express";
 import dotenv from "dotenv";
-import connect from "./config/db.js";
+import cors from "cors";
 
+
+import connect from "./config/db.js";
 import adminRoutes from "./routes/admin.js"
 import recommedationRoutes from "./routes/recommendation.js"
 import courseRoute from "./routes/course.js"
 import searchRoute from "./routes/search.js"
 
 dotenv.config();
-
-
 const port = 9000;
 
 const app= express();
+
+app.use(cors());
 
 
 connect();

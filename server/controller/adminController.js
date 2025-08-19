@@ -30,7 +30,7 @@ export const adminLogin = async(req , res) =>{
     const admin  = await adminModel.findOne({email});
 
     if(!admin){
-        return res.status(400).json({message :"Invalid Credentials"})
+        return res.status(400).json({error :"Invalid Credentials"})
     }
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });

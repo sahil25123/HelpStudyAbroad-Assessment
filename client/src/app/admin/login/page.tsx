@@ -1,5 +1,5 @@
 'use client';
-
+import axios from "axios";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -16,28 +16,36 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      if (email === 'test@email.com' && password === 'Admin@123') {
-        toast({
-          title: 'Login Successful',
-          description: 'Redirecting to dashboard...',
-        });
-        router.push('/admin/dashboard');
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Login Failed',
-          description: 'Invalid email or password.',
-        });
-        setIsLoading(false);
-      }
-    }, 1000);
-  };
+  try {
+    const res = await axios.post("http://localhost:9000/api/admin/login", {
+      email,
+      password,
+    });
+
+    // Save token (for authentication in next requests)
+    localStorage.setItem("token", res.data.token);
+
+    toast({
+      title: "Login Successful",
+      description: "Redirecting to dashboard...",
+    });
+
+    router.push("/admin/dashboard");
+  } catch (err: any) {
+    console.log(err)
+    toast({
+      variant: "destructive",
+      title: "Login Failed",
+      description: err.response?.data?.error || "Invalid email or password.",
+    });
+    
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-background p-4">
