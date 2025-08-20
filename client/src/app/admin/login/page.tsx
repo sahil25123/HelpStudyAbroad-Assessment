@@ -26,8 +26,7 @@ export default function AdminLoginPage() {
       email,
       password,
     });
-
-    // Save token (for authentication in next requests)
+    
     localStorage.setItem("token", res.data.token);
 
     toast({

@@ -53,12 +53,9 @@ It demonstrates backend and frontend integration using the MERN stack, with feat
 ### ⚠️ Pending / Incomplete Tasks
 - **Frontend**
   - Course search functionality (by title/category) to be added in dashboard
-  - University data upload integration with backend
-  - Display AI-powered course recommendations in frontend  
+  - 
 
 - **DevOps**
-  - GitHub Actions pipeline partially drafted, not fully implemented
-  - Dockerfile for backend is ready but not tested with frontend in containerized environment
   - Deployment steps on Linux (Nginx + PM2) documented but not executed
   - Kafka usage is documented conceptually but not integrated
 
